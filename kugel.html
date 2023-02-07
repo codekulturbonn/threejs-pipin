@@ -3,7 +3,7 @@
 <script src="http://gamingJS.com/ChromeFixes.js"></script>
 <script>
   var camera, scene, renderer;
-  var geometry, material, mesh;
+  var geometry, material, avatar;
   var size = 100
   var dir = 1
   init();
@@ -24,14 +24,32 @@
       wireframeLinewidth:2
     }*/);
 
-    mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-/*
-    let geo = new THREE.EdgesGeometry(mesh.geometry)
-    let mat = new THREE.LineBasicMaterial( {color: 0x000000})
-    let wireframe = new THREE.LineSegments(geo, mat)
-    mesh.add(wireframe)
-*/
+    avatar = new THREE.Mesh(geometry, material);
+    scene.add(avatar);
+
+    var hand = new THREE.SphereGeometry(44)
+    var right_hand = new THREE.Mesh(hand, material)
+    right_hand.position.set(-150, 0, 0)
+    avatar.add(right_hand)
+
+    var left_hand = new THREE.Mesh(hand, material)
+    left_hand.position.set(150, 0, 0)
+    avatar.add(left_hand)
+
+    var foot = new THREE.SphereGeometry(50)
+    var right_foot = new THREE.Mesh(foot, material)
+    right_foot.position.set(-75, -125, 0)
+    avatar.add(right_foot)
+
+    var left_foot = new THREE.Mesh(foot, material)
+    left_foot.position.set(75, -125, 0)
+    avatar.add(left_foot)
+
+    var head = new THREE.SphereGeometry(74, 10, 10)
+    var face = new THREE.Mesh(head, material)
+    face.position.set(0, 180, 0)
+    avatar.add(face)
+
     renderer = new THREE.CanvasRenderer();
     renderer.setClearColorHex(0xffffff);
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -44,11 +62,27 @@
   function animate() {
     requestAnimationFrame(animate);
 
-    mesh.rotation.x = Date.now() * 0.0005;
-    mesh.rotation.y = Date.now() * 0.001;
+    avatar.rotation.x =  avatar.rotation.x + 0.03
+   /* avatar.rotation.y = Date.now() * 0.001;
     geometry.size = size
     size+=dir
-    if (size > 200 || size < 50) dir*=-1
+    if (size > 200 || size < 50) dir*=-1*/
     renderer.render(scene, camera);
   }
+
+document.addEventListener('keydown', function(event){
+  switch(event.keyCode) {
+    case 37: avatar.position.x -= 5
+      break
+    case 38: avatar.position.z -= 5
+      break
+    case 39: avatar.position.x += 5
+      break
+    case 40: avatar.position.z += 5
+      break
+  }   
+})
+
+
+
 </script>
