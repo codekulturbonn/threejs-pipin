@@ -3,19 +3,14 @@
 <script src="http://gamingJS.com/ChromeFixes.js"></script>
 <script>
   var camera, scene, renderer;
-  var geometry, material, avatar;
+  var avatar1, avatar2
   var size = 100
   var dir = 1
   init();
   animate();
 
-  function init() {
-    scene = new THREE.Scene();
-
-    var aspect = window.innerWidth / window.innerHeight;
-    camera = new THREE.PerspectiveCamera(75, aspect, 1, 1000);
-    camera.position.z = 500;
-    scene.add(camera);
+  function make_dude(){
+    var geometry, material, dude;
 
     geometry = new THREE.SphereGeometry(size,10,10);
     material = new THREE.MeshNormalMaterial(/*{
@@ -24,31 +19,46 @@
       wireframeLinewidth:2
     }*/);
 
-    avatar = new THREE.Mesh(geometry, material);
-    scene.add(avatar);
+    dude = new THREE.Mesh(geometry, material);
+    scene.add(dude);
 
     var hand = new THREE.SphereGeometry(44)
     var right_hand = new THREE.Mesh(hand, material)
     right_hand.position.set(-150, 0, 0)
-    avatar.add(right_hand)
+    dude.add(right_hand)
 
     var left_hand = new THREE.Mesh(hand, material)
     left_hand.position.set(150, 0, 0)
-    avatar.add(left_hand)
+    dude.add(left_hand)
 
     var foot = new THREE.SphereGeometry(50)
     var right_foot = new THREE.Mesh(foot, material)
     right_foot.position.set(-75, -125, 0)
-    avatar.add(right_foot)
+    dude.add(right_foot)
 
     var left_foot = new THREE.Mesh(foot, material)
     left_foot.position.set(75, -125, 0)
-    avatar.add(left_foot)
+    dude.add(left_foot)
 
     var head = new THREE.SphereGeometry(74, 10, 10)
     var face = new THREE.Mesh(head, material)
     face.position.set(0, 180, 0)
-    avatar.add(face)
+    dude.add(face)
+    return dude
+
+  }
+  function init() {
+    scene = new THREE.Scene();
+
+    var aspect = window.innerWidth / window.innerHeight;
+    camera = new THREE.PerspectiveCamera(75, aspect, 1, 1000);
+    camera.position.z = 500;
+    scene.add(camera);
+
+   avatar1 =  make_dude()
+   avatar1.position.x = 400
+   avatar2 =  make_dude()
+   avatar2.position.x = 30
 
     renderer = new THREE.CanvasRenderer();
     renderer.setClearColorHex(0xffffff);
@@ -59,11 +69,16 @@
     document.body.appendChild(renderer.domElement);
   }
 
+  var is_flipping = false
+
   function animate() {
     requestAnimationFrame(animate);
 
-    avatar.rotation.x =  avatar.rotation.x + 0.03
-   /* avatar.rotation.y = Date.now() * 0.001;
+if (is_flipping){
+  dude.rotation.x =  dude.rotation.x + 0.03
+}
+   
+   /* dude.rotation.y = Date.now() * 0.001;
     geometry.size = size
     size+=dir
     if (size > 200 || size < 50) dir*=-1*/
@@ -71,15 +86,28 @@
   }
 
 document.addEventListener('keydown', function(event){
+  console.log (event.keyCode)
   switch(event.keyCode) {
-    case 37: avatar.position.x -= 5
+    case 37: avatar2.position.x -= 5
       break
-    case 38: avatar.position.z -= 5
+    case 38: avatar2.position.z -= 5
       break
-    case 39: avatar.position.x += 5
+    case 39: avatar2.position.x += 5
       break
-    case 40: avatar.position.z += 5
+    case 40: avatar2.position.z += 5
       break
+    case 32: is_flipping = !is_flipping
+      break
+
+    case 65: avatar1.position.x -= 5
+      break
+    case 83: avatar1.position.z -= 5
+      break
+    case 68: avatar1.position.x += 5
+      break
+    case 87: avatar1.position.z += 5
+      break
+    
   }   
 })
 
