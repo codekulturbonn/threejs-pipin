@@ -1,0 +1,145 @@
+<html>
+    <head></head>
+    <body></body>
+<script src="http://gamingJS.com/Three.js"></script>
+<script src="http://gamingJS.com/ChromeFixes.js"></script>
+<script>
+
+var avatar, scene, camera, renderer, right_hand, is_moving_left, is_moving_right, is_moving_forward, is_moving_back;  
+var clock = new THREE.Clock(true);
+
+function rotate() {
+  avatar.rotation.z = Date.now() * 0.00005;
+  avatar.rotation.x = Date.now() * 0.00005;
+}
+  
+function walk() {
+  right_hand.position.z = Math.sin(clock.getElapsedTime()*10) * 100;
+  left_hand.position.z = Math.sin(clock.getElapsedTime()*10) * -100;
+  left_foot.position.z = Math.sin(clock.getElapsedTime()*10) * 50;
+  right_foot.position.z = Math.sin(clock.getElapsedTime()*10) * -50;
+}
+
+function isWalking() {
+  if (is_moving_left) return true
+  if (is_moving_right) return true
+  if (is_moving_forward) return true
+  if (is_moving_back) return true
+  return false;
+}
+
+init();
+animate();
+
+function generateAvatar() {
+  // geometry
+  var eye = new THREE.SphereGeometry(30)
+  var nose = new THREE.SphereGeometry(20)
+  var pupille = new THREE.SphereGeometry(10)
+  var body = new THREE.SphereGeometry(100);
+  var hand = new THREE.SphereGeometry(50);
+    
+  // material
+  var eye_material = new THREE.MeshBasicMaterial({
+    color: 0xffffff});
+  var nose_material = new THREE.MeshBasicMaterial({
+    color: 0xfc0000})
+  var pupille_material = new THREE.MeshBasicMaterial({
+    color: 0x000000})
+  var cover = new THREE.MeshBasicMaterial({
+    color: 0xd977ef});
+    
+  // meshs
+  avatar = new THREE.Mesh(body, cover);
+  right_hand = new THREE.Mesh(hand, cover);
+  left_hand = new THREE.Mesh(hand, cover);
+  right_foot = new THREE.Mesh(hand, cover);
+  left_foot = new THREE.Mesh(hand, cover);
+  var left_eye = new THREE.Mesh(eye, eye_material);
+  var right_eye = new THREE.Mesh(eye, eye_material);
+  var middle_nose = new THREE.Mesh(nose, nose_material);
+  var left_pupille = new THREE.Mesh(pupille, pupille_material);
+  var right_pupille = new THREE.Mesh(pupille, pupille_material);
+  
+  right_hand.position.set(-140, 0, 0);
+  left_hand.position.set(140, 0, 0);
+  right_foot.position.set(-75, -115, 0);
+  left_foot.position.set(75, -115, 0);
+  left_eye.position.set(40, 20, 70)
+  right_eye.position.set(-40, 20, 70)
+  middle_nose.position.set(0, -10, 70)
+  left_pupille.position.set(30, 20, 100)
+  right_pupille.position.set(-30, 20, 100)
+          
+  avatar.add(right_hand)
+  avatar.add(left_hand)
+  avatar.add(right_foot)
+  avatar.add(left_eye)
+  avatar.add(left_foot)
+  avatar.add(right_eye)
+  avatar.add(middle_nose)
+  avatar.add(left_pupille)
+  avatar.add(right_pupille);
+  
+  return avatar;
+} 
+
+function init() {  
+
+  // This is where stuff in our game will happen:
+  scene = new THREE.Scene();
+
+  var marker = new THREE.Object3D();
+  scene.add(marker);
+
+  // This is what sees the stuff:
+  var aspect_ratio = window.innerWidth / window.innerHeight;
+  camera = new THREE.PerspectiveCamera(75, aspect_ratio, 1, 10000);
+  camera.position.z = 500;
+
+  // This will draw what the camera sees onto the screen:
+  renderer = new THREE.CanvasRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+  document.addEventListener('keyup', function(event) {
+    is_moving_left=false;
+    is_moving_forward=false;
+    is_moving_right=false;
+    is_moving_back=false;
+  });
+  document.addEventListener('keydown', function(event){
+    var code = event.keyCode; 
+        
+    if (code == 37) { // left
+      marker.position.x = marker.position.x-5;
+      is_moving_left=true;
+    }
+    if (code == 38) { // up
+      marker.position.z = marker.position.x-5;
+      is_moving_forward=true;
+    }
+    if (code == 39) { // right
+      marker.position.x = marker.position.x+5;
+      is_moving_right = true;
+    }
+    if (code == 40) { // down
+      marker.position.z = marker.position.x+5;
+      is_moving_back=true;
+    }
+  });
+
+  marker.add(generateAvatar()); 
+  marker.add(camera);
+}
+  
+function animate() {
+    
+  requestAnimationFrame(animate);
+  // rotate();
+  if (isWalking()) {walk()}
+  
+  // Now, show what the camera sees on the screen:
+  renderer.render(scene, camera);
+}
+
+</script></html>
