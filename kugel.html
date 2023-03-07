@@ -9,8 +9,8 @@
   init();
   animate();
 
-  function make_dude(){
-    var geometry, material, dude;
+  function make_avatar1(){
+    var geometry, material, avatar1;
 
     geometry = new THREE.SphereGeometry(size,10,10);
     material = new THREE.MeshNormalMaterial(/*{
@@ -19,32 +19,32 @@
       wireframeLinewidth:2
     }*/);
 
-    dude = new THREE.Mesh(geometry, material);
-    scene.add(dude);
+    avatar1 = new THREE.Mesh(geometry, material);
+    scene.add(avatar1);
 
     var hand = new THREE.SphereGeometry(44)
     var right_hand = new THREE.Mesh(hand, material)
     right_hand.position.set(-150, 0, 0)
-    dude.add(right_hand)
+    avatar1.add(right_hand)
 
     var left_hand = new THREE.Mesh(hand, material)
     left_hand.position.set(150, 0, 0)
-    dude.add(left_hand)
+    avatar1.add(left_hand)
 
     var foot = new THREE.SphereGeometry(50)
     var right_foot = new THREE.Mesh(foot, material)
     right_foot.position.set(-75, -125, 0)
-    dude.add(right_foot)
+    avatar1.add(right_foot)
 
     var left_foot = new THREE.Mesh(foot, material)
     left_foot.position.set(75, -125, 0)
-    dude.add(left_foot)
+    avatar1.add(left_foot)
 
     var head = new THREE.SphereGeometry(74, 10, 10)
     var face = new THREE.Mesh(head, material)
     face.position.set(0, 180, 0)
-    dude.add(face)
-    return dude
+    avatar1.add(face)
+    return avatar1
 
   }
   function init() {
@@ -55,9 +55,9 @@
     camera.position.z = 500;
     scene.add(camera);
 
-   avatar1 =  make_dude()
+   avatar1 =  make_avatar1()
    avatar1.position.x = 400
-   avatar2 =  make_dude()
+   avatar2 =  make_avatar1()
    avatar2.position.x = 30
 
     renderer = new THREE.CanvasRenderer();
@@ -69,20 +69,24 @@
     document.body.appendChild(renderer.domElement);
   }
 
-  var is_flipping = false
+  var is_flipping = true
 
   function animate() {
     requestAnimationFrame(animate);
 
-if (is_flipping){
-  dude.rotation.x =  dude.rotation.x + 0.03
-}
-   
-   /* dude.rotation.y = Date.now() * 0.001;
-    geometry.size = size
-    size+=dir
-    if (size > 200 || size < 50) dir*=-1*/
-    renderer.render(scene, camera);
+  if (is_flipping){
+    avatar1.rotation.y =  avatar1.rotation.y + 0.08
+  }
+  
+  /*
+  avatar1.rotation.y = Date.now() * 0.001;
+  geometry.size = size
+  size+=dir
+  if (size > 200 || size < 50) {
+    dir*=-1
+  }
+  */
+  renderer.render(scene, camera);
   }
 
 document.addEventListener('keydown', function(event){

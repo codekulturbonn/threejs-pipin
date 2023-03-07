@@ -21,6 +21,8 @@
 
  // ******** START CODING ON THE NEXT LINE ********
 
+ var not_allowed = [];
+
  var marker = new THREE.Object3D();
  scene.add(marker);
 
@@ -64,6 +66,16 @@
    top.position.y = 175;
    trunk.add(top);
 
+   var boundary = new THREE.Mesh(
+    new THREE.CircleGeometry(300),
+    new THREE.MeshNormalMaterial()
+   );
+   boundary.position.y = -100
+   boundary.rotation.x = -Math.PI/2
+   trunk.add(boundary)
+
+   not_allowed.push(boundary)
+
    trunk.position.set(x, -75, z);
    scene.add(trunk);
  }
@@ -73,6 +85,7 @@
  makeTreeAt(-500,  0);
  makeTreeAt( 750, -1000);
  makeTreeAt(-750, -1000);
+
 
  // Now, animate what the camera sees on the screen:
  var isCartwheeling = false;
@@ -91,13 +104,39 @@
 
  document.addEventListener('keydown', sendKeyDown);
  function sendKeyDown(event) {
+  var is_moving_left, is_moving_right, is_moving_up, is_moving_down
    var code = event.code;
-   if (code == 'ArrowLeft') marker.position.x = marker.position.x - 5;
-   if (code == 'ArrowRight') marker.position.x = marker.position.x + 5;
-   if (code == 'ArrowUp') marker.position.z = marker.position.z - 5;
-   if (code == 'ArrowDown') marker.position.z = marker.position.z + 5;
+   if (code == 'ArrowLeft') {
+    marker.position.x = marker.position.x - 5;
+    is_moving_left = true
+   }
+   if (code == 'ArrowRight') {
+    marker.position.x = marker.position.x + 5;
+    is_moving_right = true
+   }
+   if (code == 'ArrowUp') {
+    marker.position.z = marker.position.z - 5;
+    is_moving_up = true
+   }
+   if (code == 'ArrowDown') {
+    marker.position.z = marker.position.z + 5;
+    is_moving_down = true
+   }
+   if (detectCollisions()) {
+    if (is_moving_left) marker.position.x = marker.position.x+5
+    if (is_moving_right) marker.position.x = marker.position.x-5
+    if (is_moving_up) marker.position.z = marker.position.z+5
+    if (is_moving_down) marker.position.z = marker.position.z-5
+   }
 
    if (code == 'KeyC') isCartwheeling = !isCartwheeling;
    if (code == 'KeyF') isFlipping = !isFlipping;
+ }
+ function detectCollisions() {
+  var vector = new THREE.Vector3(0, -1, 0)
+  var ray = new THREE.Ray(marker.position, vector)
+  var intersects = ray.intersectObjects(not_allowed)
+  if (intersects.length > 0) return true
+  return false
  }
 </script>
