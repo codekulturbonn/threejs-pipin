@@ -56,12 +56,12 @@
  function makeTreeAt(x, z) {
    var trunk = new THREE.Mesh(
      new THREE.CylinderGeometry(50, 50, 200),
-     new THREE.MeshBasicMaterial({color: 'sienna'})
+     new THREE.MeshBasicMaterial({color: 0x663300})
    );
 
    var top = new THREE.Mesh(
      new THREE.SphereGeometry(150),
-     new THREE.MeshBasicMaterial({color: 'forestgreen'})
+     new THREE.MeshBasicMaterial({color: 0x009900})
    );
    top.position.y = 175;
    trunk.add(top);
