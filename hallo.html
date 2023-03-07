@@ -5,7 +5,7 @@
 <script src="http://gamingJS.com/ChromeFixes.js"></script>
 <script>
 
-var avatar, scene, camera, renderer, right_hand, is_moving_left, is_moving_right, is_moving_forward, is_moving_back;  
+var avatar, not_allowed = [], scene, camera, renderer, right_hand, is_moving_left, is_moving_right, is_moving_forward, is_moving_back;  
 var clock = new THREE.Clock(true);
 
 function rotate() {
@@ -26,6 +26,41 @@ function isWalking() {
   if (is_moving_forward) return true
   if (is_moving_back) return true
   return false;
+}
+
+function detectCollisions(marker) { 
+    var vector = new THREE.Vector3(0, -1, 0);
+    var ray = new THREE.Ray(marker.position, vector);
+    var intersects = ray.intersectObjects(not_allowed)
+    if (intersects.length > 0) {
+        return true
+    } else {
+        return false
+    }
+}
+
+function makeTreeAt(scene, x, z) {
+   var trunk = new THREE.Mesh(
+     new THREE.CylinderGeometry(50, 50, 200),
+     new THREE.MeshBasicMaterial({color: 0x874400})
+   );
+   var top = new THREE.Mesh(
+     new THREE.SphereGeometry(150),
+     new THREE.MeshBasicMaterial({color: 0x009030})
+   );
+   top.position.y = 175;
+   trunk.add(top);
+
+var boundary = new THREE.Mesh( new THREE.CircleGeometry(300),
+
+new THREE.MeshBasicMaterial({color: 0x231200}) );
+boundary.position.y = -100;
+boundary.rotation.x = -Math.PI/2;
+trunk.add(boundary);
+not_allowed.push(boundary)
+
+   trunk.position.set(x, -75, z);
+   scene.add(trunk);
 }
 
 init();
@@ -92,6 +127,12 @@ function init() {
   var marker = new THREE.Object3D();
   scene.add(marker);
 
+ // Trees
+ makeTreeAt(scene, 500,  0);
+ makeTreeAt(scene, -500,  0);
+ makeTreeAt(scene, 750, -1000);
+ makeTreeAt(scene, -750, -1000);
+
   // This is what sees the stuff:
   var aspect_ratio = window.innerWidth / window.innerHeight;
   camera = new THREE.PerspectiveCamera(75, aspect_ratio, 1, 10000);
@@ -115,7 +156,7 @@ function init() {
       is_moving_left=true;
     }
     if (code == 38) { // up
-      marker.position.z = marker.position.x-5;
+      marker.position.z = marker.position.z-5;
       is_moving_forward=true;
     }
     if (code == 39) { // right
@@ -123,10 +164,19 @@ function init() {
       is_moving_right = true;
     }
     if (code == 40) { // down
-      marker.position.z = marker.position.x+5;
+      marker.position.z = marker.position.z+5;
       is_moving_back=true;
     }
+
+    if (detectCollisions(marker)) {
+        if (is_moving_left)  marker.position.x = marker.position.x+5;
+        if (is_moving_forward) marker.position.z = marker.position.z+5;
+        if (is_moving_right) marker.position.x = marker.position.x-5;
+        if (is_moving_back) marker.position.z = marker.position.z-5;
+    }
+
   });
+
 
   marker.add(generateAvatar()); 
   marker.add(camera);
